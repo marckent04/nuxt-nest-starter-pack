@@ -2,11 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { AppModule } from './app.module';
-
+// import { appValidationRequestPipe } from '@/server/src/common/ValidationPipe'
 const bootstrap = async (express: Express.Application) => {
-  console.log("boom");
-
   const app = await NestFactory.create(AppModule, new ExpressAdapter(express));
+  // app.useGlobalPipes(appValidationRequestPipe);
   await app.init();
   return app;
 };
