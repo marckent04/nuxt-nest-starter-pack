@@ -2,7 +2,7 @@ import express from 'express';
 
 import { AppMiddleware } from './main';
 
-const app = express();
+const app = require("express")();
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     const nest = new AppMiddleware(app).use(req, res, next);

@@ -1,44 +1,25 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Patch,
-  HttpCode,
-} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+// import { UpdateUserInput } from "./inputs/update-user.input";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+// import { Roles } from "../../decorators/Role.decorator";
+// import { Role } from "../../enums/Role.enum";
+// import { JwtPayload } from "../auth/interfaces/Jwt.payload";
 
-@Controller("user")
+@Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService,
+  ) { }
 
-  @Post()
-  @HttpCode(201)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto)
+  @Get(":id")
+  findOne(@Param("id") id: number) {
+    return this.userService.findOne(id);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll()
+  // @Mutation("updateUser")
+  // updateUser(@Args("updateUserInput") updateUserInput: UpdateUserInput) {
+  //   return this.userService.update(updateUserInput.id, updateUserInput);
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne({ id })
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.userService.update(+id, updateUserDto)
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id)
-  // }
 }

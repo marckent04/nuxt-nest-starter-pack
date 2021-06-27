@@ -1,11 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { ExpressAdapter } from "@nestjs/platform-express";
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 // import { appValidationRequestPipe } from '@/server/src/common/ValidationPipe'
 const bootstrap = async (express: Express.Application) => {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(express));
   // app.useGlobalPipes(appValidationRequestPipe);
+  const config = new DocumentBuilder()
+    .setTitle('Api')
+    .setDescription('The API description')
+    .setVersion('1.0')
+    .addTag('Api')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
   await app.init();
   return app;
 };

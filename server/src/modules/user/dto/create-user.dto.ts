@@ -1,14 +1,17 @@
-import { IsEmail, IsNotEmpty, Matches } from "class-validator";
+import { IsEmail, IsNotEmpty, Matches, MinLength } from "class-validator";
 
 export class CreateUserDto {
-  @IsEmail()
-  email: string;
+  @Matches(/^(07|05|01|21|25|27)([0-9]{8})$/, {
+    message: "incorrect phone number",
+  })
+  phone: string;
+
+  @MinLength(8)
+  password: string;
 
   @IsNotEmpty()
   name: string;
 
-  @Matches(
-    /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-+!*$@%_])([-+!*$@%_\w]{8,15})$/,
-  )
-  password: string;
+  @IsEmail()
+  email: string;
 }

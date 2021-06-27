@@ -1,57 +1,50 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import * as bcrypt from "bcrypt";
+// import { InjectModel } from "@nestjs/mongoose";
+// import { Model } from "mongoose";
 import { User } from "./entities/user.entity";
-import { Repository } from "typeorm";
+import { Role } from "../../enums/Role.enum";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private repo: Repository<User>,
-  ) {
+  constructor(@InjectRepository(User)
+  private usersRepository: Repository<User>) { }
+
+  public readonly ROLE: Role = Role.Customer;
+
+  create(createUserInput: CreateUserDto) {
+    const user = this.usersRepository.create(createUserInput);
+    return this.usersRepository.save(user);
   }
 
-  async create(createUserDto: CreateUserDto) {
-    try {
-      const newUser = this.repo.create(createUserDto);
-      const user = await newUser.save();
-      return user;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.CONFLICT);
-    }
+  async findByEmail(email: string) {
+    return await this.usersRepository.findOne({ email });
   }
 
-  async validatePassword(user: User, password: string) {
-    return await bcrypt.compare(password, user.password);
+  async findOneByCriteria(payload: CreateUserDto) {
+    return await this.usersRepository.findOne(payload);
   }
 
-  // async findAll() {
-  //   return await this.userModel.find();
-  // }
+  async findByCriteria(payload: CreateUserDto) {
+    return await this.usersRepository.find(payload);
+  }
 
-  // async findOne(payload: UpdateUserDto) {
-  //   try {
-  //     return await this.userModel.findOne(payload);
-  //   } catch (error) {
-  //     throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-  //   }
-  // }
+  findAll() {
+    return `This action returns all user`;
+  }
 
-  // async update(id: number, updateUserDto: UpdateUserDto) {
-  //   const result: UpdateWriteOpResult = await this.userModel.updateOne({ id }, updateUserDto);
+  findOne(id: number) {
+    return this.usersRepository.findOne(id);
+  }
 
-  //   if (result.nModified === 0)
-  //     throw new HttpException(result, HttpStatus.NOT_FOUND);
+  update(id: number, updateUserInput: UpdateUserDto) {
+    return `This action updates a #${id} user`;
+  }
 
-  //   return result;
-  // }
-
-  // async remove(id: number) {
-  //   const result = await this.userModel.remove({ id });
-
-  //   return result;
-  // }
+  remove(id: number) {
+    return `This action removes a #${id} user`;
+  }
 }

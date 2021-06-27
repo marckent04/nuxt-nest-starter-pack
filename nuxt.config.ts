@@ -1,21 +1,39 @@
+//@ts-ignore
 import colors from "vuetify/es5/util/colors";
+import { NuxtConfig } from '@nuxt/types';
+import { exec } from "child_process"
+import consola from 'consola'
 
-export default {
+const buildServer = () => {
+  return new Promise(function (resolve, reject) {
+    exec("cd server && nest build", (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        reject(error);
+      }
+      if (stderr) {
+        reject(stderr);
+
+      }
+      resolve(stdout)
+    });
+  })
+}
+const config: NuxtConfig = {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: "%s - nuxt-nest",
     title: "nuxt-nest",
     htmlAttrs: {
-      lang: "en"
+      lang: "en",
     },
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "" }
+      { hid: "description", name: "description", content: "" },
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
+    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
-  serverMiddleware: ["~/server/src/server.ts"],
+  serverMiddleware: ["~/server/dist/server.js"],
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
@@ -30,13 +48,13 @@ export default {
     // https://go.nuxtjs.dev/typescript
     "@nuxt/typescript-build",
     // https://go.nuxtjs.dev/vuetify
-    "@nuxtjs/vuetify"
+    "@nuxtjs/vuetify",
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     // https://go.nuxtjs.dev/axios
-    "@nuxtjs/axios"
+    "@nuxtjs/axios",
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -55,12 +73,22 @@ export default {
           info: colors.teal.lighten1,
           warning: colors.amber.base,
           error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-        }
-      }
-    }
+          success: colors.green.accent3,
+        },
+      },
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {
+    extend(_, { isServer }) {
+      if (isServer) {
+        buildServer()
+          .then((res) => consola.success("server build successful"))
+          .catch((err) => console.error(err))
+      }
+    }
+  },
 };
+
+export default config;

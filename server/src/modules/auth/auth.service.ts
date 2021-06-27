@@ -1,79 +1,97 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from "@nestjs/common";
-import { UserService } from "../user/user.service";
-import { AuthCredentailsDto } from "./dto/authCredentials.dto";
-import { AuthRegisterDto } from "./dto/authRegister.dto";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
+import { genSaltSync } from "bcrypt";
+import { AuthCredentialsDto } from "./dtos/AuthCredentials.dto";
+import { JwtPayload } from "./interfaces/Jwt.payload";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "../../modules/user/entities/user.entity";
-import { JWT_CONSTANTS } from "../../constants";
+import { UserService } from "../user/user.service";
+import { MailService } from "../mail/mail.service";
+import { Role } from "../../enums/Role.enum";
+import { CreateUserDto } from "../user/dto/create-user.dto";
+import { PasswordForgottenDto } from "./dtos/PasswordForgotten.dto";
+import { GeneratorService } from "../generator/generator.service";
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UserService,
-    private jwtService: JwtService,
+  constructor(private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly mailService: MailService,
+    private readonly generatorService: GeneratorService
   ) { }
 
-  private hashPassword(password: string, salt: string) {
-    return bcrypt.hash(password, salt);
+  public validatePassword(password: string, hasPassword: string): boolean {
+    return bcrypt.compareSync(password, hasPassword);
   }
 
-  // async login(dto: AuthCredentailsDto) {
-  //   const user = await this.validateUserPassword(dto);
-
-  //   const payload = { email: user.email, id: user.id };
-
-  //   if (dto.remember_me) {
-  //     return {
-  //       access_token: this.jwtService.sign(payload, {
-  //         expiresIn: JWT_CONSTANTS.REMEMBER_ME_EXPIRES_IN,
-  //         secret: JWT_CONSTANTS.SECRET,
-  //       }),
-  //     };
-  //   }
-  //   return {
-  //     access_token: this.jwtService.sign(payload),
-  //   };
-  // }
-
-  // private async validateUserPassword(
-  //   payload: AuthCredentailsDto,
-  // ): Promise<User> {
-  //   const { password, email } = payload;
-
-  //   const user = await this.usersService.findOne({ email });
-
-  //   if (await this.usersService.validatePassword(user, password)) return user;
-
-  //   throw new UnauthorizedException("invalid password");
-  // }
-
-  async register(payload: AuthRegisterDto) {
-    const { passwordConfirm, ...newUser } = payload;
-    const salt = await bcrypt.genSalt();
-
-    newUser.password = await this.hashPassword(newUser.password, salt);
-    return this.usersService.create(newUser);
+  public hashPassword(password: string) {
+    const salt = genSaltSync();
+    return bcrypt.hashSync(password, salt);
   }
 
-  // async passwordForgotten(email: string) {
-  //   const user = await this.usersService.findOne({ email });
+  public async commonLogin<T extends UserService>(
+    credentials: AuthCredentialsDto,
+    service: T,
+  ) {
+    const infos = await service["findByEmail"](credentials.email);
+    // const infos = await service["findByPhone"](credentials.email);
 
-  //   if (user) {
-  //     // this.eventEmitter.emit(
-  //     //   ResetPasswordEvent.eventName,
-  //     //   new ResetPasswordEvent({ email: user.email }),
-  //     // );
+    if (!infos) return new UnauthorizedException("incorrect credentials");
 
-  //     return { message: "email envooyé" };
-  //   }
+    if (!this.validatePassword(credentials.password, infos.password))
+      return new UnauthorizedException("incorrect credentials");
 
-  //   return new NotFoundException("account not found");
-  // }
+    const payload: JwtPayload = {
+      email: infos.email,
+      id: infos.id,
+      role: service.ROLE,
+    };
 
-  // logout() {}
+    return {
+      token: this.jwtService.sign(payload),
+    };
+  }
+
+  public async userRegister(createUserDto: CreateUserDto) {
+    createUserDto.password = this.hashPassword(
+      createUserDto.password,
+    );
+
+    const user = await this.userService.create(createUserDto);
+    await this.mailService.registerSuccessful(user);
+
+    return user;
+  }
+
+  public userLogin(credentials: AuthCredentialsDto) {
+    if (!credentials) throw new BadRequestException("Incorrect credentials");
+
+    credentials.role = Role.Customer;
+
+    return this.commonLogin<UserService>(
+      credentials,
+      this.userService
+    );
+  }
+
+  public async userPasswordForgotten(dto: PasswordForgottenDto) {
+    const user = await this.userService.findOneByCriteria(dto as any);
+
+    this.userService.update
+    if (!user)
+      return new BadRequestException("User not found");
+
+    const newPassword = this.generatorService.newPassword();
+
+    user.password = this.hashPassword(newPassword);
+
+    console.log(newPassword);
+
+    const updatedUser = await user.save();
+
+    await this.mailService.passwordForgotten(user, newPassword);
+
+
+
+    return updatedUser;
+  }
 }
