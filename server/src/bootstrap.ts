@@ -9,6 +9,7 @@ export const bootstrap = async (express?: Express.Application) => {
     if (express) {
         app = await NestFactory.create(AppModule, new ExpressAdapter(express));
     } else {
+        console.log('la');
         app = await NestFactory.create(AppModule);
     }
     // app.useGlobalPipes(appValidationRequestPipe);

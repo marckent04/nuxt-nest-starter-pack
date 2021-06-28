@@ -6,6 +6,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GeneratorModule } from './modules/generator/generator.module';
 import { User } from './modules/user/entities/user.entity';
+import { DatabaseModule } from './modules/database/database.module';
 @Module({
   imports: [
     UserModule,
@@ -23,6 +24,7 @@ import { User } from './modules/user/entities/user.entity';
       synchronize: true,
       keepConnectionAlive: true
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

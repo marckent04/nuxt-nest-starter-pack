@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 // import { InjectModel } from "@nestjs/mongoose";
@@ -10,7 +10,7 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User)
+  constructor(@Inject('USER_REPOSITORY')
   private usersRepository: Repository<User>) { }
 
   public readonly ROLE: Role = Role.Customer;

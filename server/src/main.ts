@@ -7,6 +7,7 @@ require('dotenv').config({ path: path.join(__dirname, "../../.env") })
 
 const main = async () => {
   const app = await bootstrap();
+
   app.listen(process.env.DEV_SERVER_PORT as string).then(() => {
     console.log("server laucnh on port " + process.env.DEV_SERVER_PORT);
   });
