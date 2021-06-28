@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { GeneratorModule } from './modules/generator/generator.module';
+import { User } from './modules/user/entities/user.entity';
 @Module({
   imports: [
     UserModule,
@@ -17,6 +18,7 @@ import { GeneratorModule } from './modules/generator/generator.module';
       username: 'root',
       password: 'root',
       database: 'test',
+      // entities: ["dist/**/*.entity{.ts,.js}"],
       autoLoadEntities: true,
       synchronize: true,
       keepConnectionAlive: true

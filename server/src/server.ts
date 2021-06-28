@@ -1,6 +1,5 @@
 import express from 'express';
-
-import { AppMiddleware } from './main';
+import { AppMiddleware } from './middlewares/app.middleware';
 
 const app = require("express")();
 

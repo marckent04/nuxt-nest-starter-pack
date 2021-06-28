@@ -12,7 +12,6 @@ export class AppController {
 
   @Get("bye")
   goodBye(@Res() res: express.Response) {
-    console.log("good");
-    return res.json({ message: 'Goodbye' });
+    return res.json({ message: 'Goodbye now' });
   }
 }

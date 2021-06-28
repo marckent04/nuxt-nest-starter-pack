@@ -6,7 +6,7 @@ import consola from 'consola'
 
 const buildServer = () => {
   return new Promise(function (resolve, reject) {
-    exec("cd server && nest build", (error: any, stdout: any, stderr: any) => {
+    exec("cd server && nest start --watch", (error: any, stdout: any, stderr: any) => {
       if (error) {
         reject(error);
       }

@@ -27,6 +27,7 @@
     "class-validator": "^0.13.1",
     "core-js": "^3.9.1",
     "crypto-js": "^4.0.0",
+    "dotenv": "^10.0.0",
     "entity-cli": "^1.1.25",
     "mysql2": "^2.2.5",
     "nuxt": "^2.15.3",
