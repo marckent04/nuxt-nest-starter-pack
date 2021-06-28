@@ -56,10 +56,18 @@ export class AuthService {
       createUserDto.password,
     );
 
-    const user = await this.userService.create(createUserDto);
-    await this.mailService.registerSuccessful(user);
+    try {
+      const user = await this.userService.create(createUserDto);
+      await this.mailService.registerSuccessful(user);
+      return user;
+    } catch (error) {
+      console.log(error.code);
 
-    return user;
+      if (error.code == "ER_DUP_ENTRY") {
+        return new BadRequestException("Numero de téléphone ou email deja utilisé")
+      }
+      return new BadRequestException("une erreur est survenue")
+    }
   }
 
   public userLogin(credentials: AuthCredentialsDto) {
@@ -83,8 +91,6 @@ export class AuthService {
     const newPassword = this.generatorService.newPassword();
 
     user.password = this.hashPassword(newPassword);
-
-    console.log(newPassword);
 
     const updatedUser = await user.save();
 
