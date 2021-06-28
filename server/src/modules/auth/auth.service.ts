@@ -62,11 +62,10 @@ export class AuthService {
       return user;
     } catch (error) {
       console.log(error.code);
-
       if (error.code == "ER_DUP_ENTRY") {
-        return new BadRequestException("Numero de téléphone ou email deja utilisé")
+        throw new BadRequestException("Numero de téléphone ou email deja utilisé")
       }
-      return new BadRequestException("une erreur est survenue")
+      throw new BadRequestException("une erreur est survenue")
     }
   }
 
