@@ -1,6 +1,7 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "server/src",
+  "root": "server",
   "compilerOptions": {
     "tsConfigPath": "./tsconfig-server.build.json",
     "plugins": [
