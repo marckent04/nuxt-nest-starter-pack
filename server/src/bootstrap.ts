@@ -8,8 +8,8 @@ export const bootstrap = async (express?: Express.Application) => {
 
     if (express) {
         app = await NestFactory.create(AppModule, new ExpressAdapter(express));
+        app.setGlobalPrefix("api")
     } else {
-        console.log('la');
         app = await NestFactory.create(AppModule);
     }
     // app.useGlobalPipes(appValidationRequestPipe);
@@ -20,7 +20,7 @@ export const bootstrap = async (express?: Express.Application) => {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('/', app, document);
+    SwaggerModule.setup('api/docs', app, document);
 
     if (express) {
         await app.init();

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "server:build": "cd server && nest build",
+    "server:build": "nest build",
     "server:dev": "cd server && nest start --watch",
     "dev": "nuxt",
     "build": "nuxt build",

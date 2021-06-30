@@ -1,4 +1,15 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "server/src"
+  "sourceRoot": "server/src",
+  "compilerOptions": {
+    "tsConfigPath": "./tsconfig-server.build.json",
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "dtoFileNameSuffix": [".dto.ts"]
+        }
+      }
+    ]
+  }
 }

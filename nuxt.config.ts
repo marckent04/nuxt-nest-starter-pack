@@ -6,7 +6,7 @@ import consola from 'consola'
 
 const buildServer = () => {
   return new Promise(function (resolve, reject) {
-    exec("cd server && nest start --watch", (error: any, stdout: any, stderr: any) => {
+    exec("nest start --watch", (error: any, stdout: any, stderr: any) => {
       if (error) {
         reject(error);
       }
@@ -33,7 +33,7 @@ const config: NuxtConfig = {
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
-  serverMiddleware: ["~/server/dist/server.js"],
+  serverMiddleware: ["~/server/dist/src/server.js"],
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 

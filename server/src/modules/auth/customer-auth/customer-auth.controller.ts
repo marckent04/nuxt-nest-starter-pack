@@ -8,7 +8,9 @@ import { JwtAuthGuard } from "../../../guards/jwt-auth.guard";
 import { MailService } from "../../mail/mail.service";
 import { CreateUserDto } from "../../user/dto/create-user.dto";
 import { PasswordForgottenDto } from "../dtos/PasswordForgotten.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("User Authentication")
 @Controller("auth/user")
 export class CustomerAuthController {
   constructor(
